@@ -8,8 +8,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
-const title = "eve Chat Template";
-const description = "Build your own chat agent with eve.";
+const title = "Voom AI";
+const description = "Voom AI — ผู้ช่วย AI สำหรับระบบ Voom_system";
 const ogImage = {
   alt: title,
   height: 630,
@@ -87,7 +87,7 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
   return (
     <html
       className={`${geistSans.variable} ${geistMono.variable}`}
-      lang="en"
+      lang="th"
       suppressHydrationWarning
     >
       <head>
