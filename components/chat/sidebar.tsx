@@ -129,7 +129,7 @@ export function ChatSidebar({
           type="button"
         >
           <PlusIcon className="size-4" />
-          New session
+          แชตใหม่
         </button>
       </div>
 
