@@ -149,14 +149,13 @@ export function HomeChatPage() {
       <div className="flex min-h-0 flex-1 flex-col justify-between px-4 pt-8 pb-4 sm:px-6 sm:pb-6">
         <div className="flex min-h-0 flex-1 items-center justify-center pb-20 sm:pb-[12vh]">
           <div className="w-full max-w-2xl space-y-5 sm:space-y-7 md:space-y-8">
-            <h1 className="flex justify-center">
-              <img
-                alt="eve"
-                className="size-16 select-none invert sm:size-20 md:size-24 dark:invert-0"
-                draggable={false}
-                src="/eve.svg"
-              />
-            </h1>
+            <div className="flex flex-col items-center justify-center gap-3 text-center">
+              <div className="flex size-16 items-center justify-center rounded-2xl bg-foreground text-3xl font-bold text-background shadow-sm sm:size-20 sm:text-4xl md:size-24 md:text-5xl">
+                V
+              </div>
+              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Voom AI</h1>
+              <p className="text-sm text-muted-foreground sm:text-base">ผู้ช่วย AI สำหรับระบบ Voom_system</p>
+            </div>
             <ChatComposer
               autoFocus
               disabled={composerDisabled}
@@ -167,7 +166,7 @@ export function HomeChatPage() {
               onChange={setDraft}
               onStop={() => {}}
               onSubmit={handleSubmit}
-              placeholder="Ask anything..."
+              placeholder="ถาม Voom AI ได้เลย..."
               value={draft}
             />
           </div>
@@ -186,7 +185,7 @@ function getHomeComposerDisabledReason({
   readonly submitting: boolean;
 }) {
   if (!setupStatus.databaseConfigured) {
-    return "Connect Neon Postgres before chatting.";
+    return "ตั้งค่า DATABASE_URL สำหรับฐานข้อมูลแชตก่อนเริ่มใช้งาน (ใช้ PostgreSQL ที่รองรับได้).";
   }
 
   if (!setupStatus.databaseSchemaReady) {
