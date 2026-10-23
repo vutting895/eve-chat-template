@@ -2,6 +2,7 @@
 
 import {
   ArrowRightIcon,
+  BotIcon,
   EllipsisIcon,
   PanelLeftIcon,
   PlusIcon,
@@ -14,7 +15,6 @@ import {
   AuthDisplayLoggedOut,
 } from "@/components/auth/auth-display";
 import { UserMenu } from "@/components/auth/user-menu";
-import { VercelIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -94,7 +94,7 @@ export function ChatSidebar({
       <div className="flex flex-col gap-1 px-2 pt-2 pb-2">
         <div className="flex items-center justify-between">
           <button
-            aria-label="New session"
+            aria-label="Voom AI home"
             className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
             onClick={() => {
               onNewChat();
@@ -102,7 +102,7 @@ export function ChatSidebar({
             }}
             type="button"
           >
-            <VercelIcon className="size-3.5 text-foreground" />
+            <BotIcon className="size-4 text-foreground" />
           </button>
           {onToggleSidebar ? (
             <Button
