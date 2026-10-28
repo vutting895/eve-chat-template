@@ -2,7 +2,6 @@
 
 This guide covers local development, storage provisioning, authentication, database migrations, and deployment for VOOM AI Chat. Run setup commands only in the separate chat repository and the intended Vercel project; do not repoint the main NOVA project while working on chat previews.
 
-
 ## Prerequisites
 
 - Node.js 24 or newer
@@ -18,9 +17,9 @@ pnpm dlx vercel@latest login
 
 The commands below use `vercel`. If you do not have a global install, replace `vercel` with `pnpm dlx vercel@latest`.
 
-## One-Click Deploy
+## Provision Required Storage
 
-The README deploy button provisions the required storage products through Vercel Marketplace:
+This guide is for the existing standalone chat project. Do not create a second project or repoint the NOVA project when setting up chat. Provision the required storage products through Vercel Marketplace:
 
 - Neon Postgres, which provides `DATABASE_URL`
 - Upstash Redis, which provides rate-limit storage env vars
@@ -41,9 +40,9 @@ vercel env run -e production -- pnpm db:migrate
 
 This uses Vercel production env vars directly and avoids copying sensitive Neon values into your terminal or local files.
 
-## Local Project Link
+## Link the Existing Chat Project
 
-Create or select the Vercel project that will run this template:
+Link this repository to the intended standalone Vercel chat project. Verify the project name and Git repository before running commands that change project settings:
 
 ```bash
 vercel link
