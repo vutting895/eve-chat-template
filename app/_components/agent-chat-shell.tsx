@@ -296,7 +296,7 @@ export function AgentChatShell({
     <AuthTopActions onSignIn={() => requestSignIn()} />
   );
   const topRightActions = (
-    <div className="pointer-events-auto mt-1 flex min-w-0 items-center justify-end gap-1.5">
+    <div className="nova-top-actions flex min-w-0 items-center justify-end gap-1.5">
       <Suspense fallback={null}>
         <ChatRouteShareButton />
       </Suspense>
@@ -307,7 +307,7 @@ export function AgentChatShell({
   return (
     <ChatShellProvider value={contextValue}>
       <SidebarCookieScript />
-      <div className="flex h-dvh overflow-hidden bg-background text-foreground">
+      <div className="nova-chat-root flex h-dvh overflow-hidden bg-background text-foreground">
         <div
           data-desktop-sidebar
           className={cn(
@@ -319,35 +319,57 @@ export function AgentChatShell({
         </div>
 
         <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between px-2 py-2 md:px-3">
-            <div className="pointer-events-auto flex items-center gap-1">
-              <Button
-                aria-label="Open sidebar"
-                className="md:hidden"
-                onClick={() => setMobileSidebarOpen(true)}
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-              >
-                <MenuIcon className="size-4" />
-              </Button>
-              {!desktopSidebarOpen ? (
+          <header className="nova-command-header">
+            <div className="nova-command-header-left">
+              <div className="flex items-center gap-1">
                 <Button
                   aria-label="Open sidebar"
-                  className="hidden md:inline-flex"
-                  onClick={() => setDesktopSidebarOpenPersisted(true)}
+                  className="nova-sidebar-toggle md:hidden"
+                  onClick={() => setMobileSidebarOpen(true)}
                   size="icon-sm"
                   type="button"
                   variant="ghost"
                 >
-                  <PanelLeftIcon className="size-4" />
+                  <MenuIcon className="size-4" />
                 </Button>
-              ) : null}
+                {!desktopSidebarOpen ? (
+                  <Button
+                    aria-label="Open sidebar"
+                    className="nova-sidebar-toggle hidden md:inline-flex"
+                    onClick={() => setDesktopSidebarOpenPersisted(true)}
+                    size="icon-sm"
+                    type="button"
+                    variant="ghost"
+                  >
+                    <PanelLeftIcon className="size-4" />
+                  </Button>
+                ) : null}
+              </div>
+              <div className="nova-command-heading">
+                <div className="nova-eyebrow"><span className="nova-eyebrow-line" /> VOOM / NOVA · INTELLIGENCE SYSTEMS</div>
+                <h1>AI <span>Command Interface</span></h1>
+              </div>
             </div>
-            {topRightActions}
+            <div className="nova-command-header-right">
+              <div className="nova-header-protocol">
+                <small>SECURITY PROTOCOL</small>
+                <strong><i /> READ-ONLY</strong>
+              </div>
+              <div className="nova-live-off-pill"><i /> LIVE TRADING OFF</div>
+              {topRightActions}
+            </div>
+          </header>
+
+          <div className="nova-system-strip" role="status">
+            <span className="nova-strip-symbol">◈</span>
+            <span className="nova-strip-copy">
+              <strong>SAFE MODE ACTIVE</strong>
+              <small>Read-only + AI analysis. No trade orders are sent from this chat.</small>
+            </span>
+            <span className="nova-strip-code">PROTOCOL 01 <b>●</b></span>
           </div>
 
-          {children}
+          <div className="nova-main-content">{children}</div>
         </main>
 
         <div
