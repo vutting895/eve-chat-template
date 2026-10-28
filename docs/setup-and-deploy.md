@@ -1,6 +1,7 @@
 # Setup and Deployment
 
-This guide covers local development, one-click deployment, production migrations, Sign in with Vercel, and optional Notion connections for eve Chat Template.
+This guide covers local development, storage provisioning, authentication, database migrations, and deployment for VOOM AI Chat. Run setup commands only in the separate chat repository and the intended Vercel project; do not repoint the main NOVA project while working on chat previews.
+
 
 ## Prerequisites
 
