@@ -2,7 +2,6 @@
 
 import {
   ArrowRightIcon,
-  BotIcon,
   EllipsisIcon,
   PanelLeftIcon,
   PlusIcon,
@@ -24,9 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { ChatListItem, SetupStatus, Viewer } from "@/lib/chat/types";
 import { cn } from "@/lib/utils";
-
-const activeRowClass = "bg-muted/50 text-foreground hover:bg-muted/60";
-const inactiveRowClass = "text-muted-foreground hover:bg-muted/50 hover:text-foreground";
 
 export function ChatSidebar({
   activeChatId,
@@ -87,27 +83,31 @@ export function ChatSidebar({
   return (
     <aside
       className={cn(
-        "flex h-full w-64 shrink-0 flex-col border-r border-border bg-background",
+        "nova-sidebar flex h-full w-64 shrink-0 flex-col border-r border-border bg-background",
         className,
       )}
     >
-      <div className="flex flex-col gap-1 px-2 pt-2 pb-2">
-        <div className="flex items-center justify-between">
+      <div className="nova-sidebar-top flex flex-col gap-1 px-3 pt-4 pb-4">
+        <div className="flex items-center justify-between gap-3">
           <button
-            aria-label="Voom AI home"
-            className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+            aria-label="VOOM NOVA home"
+            className="nova-sidebar-brand"
             onClick={() => {
               onNewChat();
               onNavigate?.(null);
             }}
             type="button"
           >
-            <BotIcon className="size-4 text-foreground" />
+            <span className="nova-brand-emblem">V<span>✦</span></span>
+            <span className="nova-brand-copy">
+              <strong>VOOM <em>/ NOVA</em></strong>
+              <small>INTELLIGENCE SYSTEMS</small>
+            </span>
           </button>
           {onToggleSidebar ? (
             <Button
               aria-label="Close sidebar"
-              className="text-muted-foreground/55 hover:text-muted-foreground"
+              className="nova-sidebar-close text-muted-foreground/55 hover:text-muted-foreground"
               onClick={onToggleSidebar}
               size="icon-sm"
               type="button"
@@ -117,11 +117,9 @@ export function ChatSidebar({
             </Button>
           ) : null}
         </div>
+        <div className="nova-sidebar-section-label">COMMAND DECK</div>
         <button
-          className={cn(
-            "flex h-8 items-center gap-2 rounded-md px-2 text-left text-sm transition-colors",
-            newSessionActive ? activeRowClass : inactiveRowClass,
-          )}
+          className={cn("nova-new-chat", newSessionActive && "is-active")}
           onClick={() => {
             onNewChat();
             onNavigate?.(null);
@@ -133,7 +131,8 @@ export function ChatSidebar({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-2 py-2">
+      <div className="nova-session-list flex-1 overflow-y-auto px-2 py-2">
+        <div className="nova-sidebar-section-label nova-sidebar-session-heading">SESSION ARCHIVE</div>
         {chats.length ? (
           <div>
             {chats.map((chat) => {
@@ -142,8 +141,8 @@ export function ChatSidebar({
               return (
                 <div
                   className={cn(
-                    "group/session relative mb-0.5 rounded-md transition-colors hover:bg-muted/50 hover:text-foreground",
-                    active ? activeRowClass : inactiveRowClass,
+                    "nova-session-row group/session relative mb-0.5 rounded-md transition-colors",
+                    active && "is-active",
                   )}
                   key={chat.id}
                 >
@@ -202,7 +201,15 @@ export function ChatSidebar({
         ) : null}
       </div>
 
-      <div className="border-t border-border px-2 py-3">
+      <div className="nova-sidebar-bottom border-t border-border px-2 py-3">
+        <div className="nova-security-card">
+          <span className="nova-security-led" />
+          <div>
+            <strong>READ-ONLY MODE</strong>
+            <small>Order execution locked</small>
+          </div>
+          <span className="nova-lock-symbol">⌑</span>
+        </div>
         {viewer ? (
           <UserMenu viewer={viewer} />
         ) : isLoadingChats ? (
@@ -241,7 +248,7 @@ function SidebarSignInButton({
 }) {
   return (
     <button
-      className="flex h-8 w-full items-center justify-between rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+      className="nova-sign-in flex h-8 w-full items-center justify-between rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
       disabled={authDisabled}
       onClick={() => {
         onSignIn?.();

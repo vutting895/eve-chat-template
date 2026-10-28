@@ -9,7 +9,6 @@ import {
 } from "@/app/_components/agent-chat";
 import { useChatShell } from "@/app/_components/chat-shell-context";
 import { ChatComposer } from "@/components/chat/composer";
-import { TemplateFooterLinks } from "@/components/chat/template-footer-links";
 import { getChatMessageLengthError } from "@/lib/chat/limits";
 import {
   createProvisionalChatId,
@@ -138,7 +137,7 @@ export function HomeChatPage() {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col pt-14 md:pt-8">
+    <div className="nova-home-page flex min-h-0 flex-1 flex-col">
       {toastError ? (
         <ErrorToast
           message={toastError}
@@ -147,16 +146,22 @@ export function HomeChatPage() {
       ) : null}
 
       <div className="flex min-h-0 flex-1 flex-col justify-between px-4 pt-8 pb-4 sm:px-6 sm:pb-6">
-        <div className="flex min-h-0 flex-1 items-center justify-center pb-20 sm:pb-[12vh]">
-          <div className="w-full max-w-2xl space-y-5 sm:space-y-7 md:space-y-8">
-            <div className="flex flex-col items-center justify-center gap-3 text-center">
-              <div className="flex size-16 items-center justify-center rounded-2xl bg-foreground text-3xl font-bold text-background shadow-sm sm:size-20 sm:text-4xl md:size-24 md:text-5xl">
-                V
+        <div className="nova-home-center flex min-h-0 flex-1 items-center justify-center pb-12 sm:pb-[8vh]">
+          <div className="nova-home-content w-full max-w-2xl space-y-5 sm:space-y-7 md:space-y-8">
+            <div className="nova-home-hero">
+              <div className="nova-home-orb" aria-hidden="true"><span>V</span><i>✦</i></div>
+              <div className="nova-home-eyebrow">VOOM / NOVA · INTELLIGENCE SYSTEMS</div>
+              <h1 className="nova-home-title">Your intelligence, <span>in motion.</span></h1>
+              <p className="nova-home-subtitle">
+                คุยกับ NOVA เพื่อสำรวจกลยุทธ์ วิเคราะห์บริบทตลาด และทำความเข้าใจข้อมูลที่ระบบเปิดให้ใช้งาน
+              </p>
+              <div className="nova-home-statuses" aria-label="ระบบอยู่ในโหมดปลอดภัย">
+                <span className="nova-home-status">READ-ONLY / AI ANALYSIS</span>
+                <span className="nova-home-status is-disabled">LIVE TRADING OFF</span>
               </div>
-              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Voom AI</h1>
-              <p className="text-sm text-muted-foreground sm:text-base">ผู้ช่วย AI สำหรับระบบ Voom_system</p>
             </div>
             <ChatComposer
+              className="nova-composer"
               autoFocus
               disabled={composerDisabled}
               disabledReason={composerDisabledReason}
@@ -171,7 +176,9 @@ export function HomeChatPage() {
             />
           </div>
         </div>
-        <TemplateFooterLinks />
+        <footer className="nova-chat-footer">
+          <span /> PRIVATE AI CHAT <span /> READ-ONLY ANALYSIS <span /> LIVE TRADING OFF
+        </footer>
       </div>
     </div>
   );

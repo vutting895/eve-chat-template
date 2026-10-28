@@ -7,13 +7,14 @@ import { AuthDisplayPreHydrationHead } from "@/components/auth/auth-display";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
+import "./nova-theme.css";
 
-const title = "Voom AI";
-const description = "Voom AI — ผู้ช่วย AI สำหรับระบบ Voom_system";
+const title = "VOOM / NOVA AI";
+const description = "VOOM / NOVA AI — ระบบแชตอัจฉริยะสำหรับการวิเคราะห์และงานวิจัย โดยคงโหมด Read-only";
 const ogImage = {
   alt: title,
   height: 630,
-  url: "/eve-chat-template-og.png",
+  url: "/icon.svg",
   width: 1200,
 };
 

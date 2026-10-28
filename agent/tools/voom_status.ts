@@ -1,71 +1,100 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
 
-const BASE_URL = "https://voom-system-api.suwapat787.workers.dev";
-const PATHS = [
-  { name: "health", path: "/api/health" },
-  { name: "mt5_status", path: "/api/mt5/status" },
+const SERVICES = [
+  {
+    name: "nova_ai_worker",
+    url: "https://voom-system-nova-ai.suwapat787.workers.dev/health",
+  },
+  {
+    name: "remote_mcp_worker",
+    url: "https://voom-system-mcp.suwapat787.workers.dev/health",
+  },
 ] as const;
 
-function redact(value: unknown, depth = 0): unknown {
-  if (depth > 6) return "[depth-limited]";
-  if (Array.isArray(value)) return value.slice(0, 40).map((item) => redact(item, depth + 1));
-  if (value && typeof value === "object") {
-    const out: Record<string, unknown> = {};
-    for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
-      if (/secret|token|password|authorization|credential|api.?key|account(number|id)?|login(number|id)?|balance|equity|profit|ticket|email|phone/i.test(key)) {
-        out[key] = "[redacted]";
-      } else {
-        out[key] = redact(item, depth + 1);
-      }
+const SAFE_HEALTH_FIELDS = [
+  "ok",
+  "service",
+  "mode",
+  "status",
+  "aiBinding",
+  "authConfigured",
+  "customerAuthenticationRequired",
+  "ordersEnabled",
+  "executionEnabled",
+  "liveTradingEnabled",
+] as const;
+
+function selectSafeHealthFields(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+
+  const source = value as Record<string, unknown>;
+  const safe: Record<string, unknown> = {};
+
+  for (const key of SAFE_HEALTH_FIELDS) {
+    const item = source[key];
+    if (
+      typeof item === "string" ||
+      typeof item === "boolean" ||
+      (typeof item === "number" && Number.isFinite(item))
+    ) {
+      safe[key] = typeof item === "string" ? item.slice(0, 120) : item;
     }
-    return out;
   }
-  if (typeof value === "string") return value.slice(0, 1000);
-  return value;
+
+  return safe;
 }
 
-async function readEndpoint(path: string) {
+async function readHealth(service: (typeof SERVICES)[number]) {
   try {
-    const response = await fetch(new URL(path, BASE_URL), {
+    const response = await fetch(service.url, {
       method: "GET",
       headers: { accept: "application/json" },
-      signal: AbortSignal.timeout(7000),
       cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(7000),
     });
-    const body = await response.text();
-    let data: unknown;
+
+    const body = (await response.text()).slice(0, 8000);
+    let parsed: unknown;
     try {
-      data = JSON.parse(body);
+      parsed = JSON.parse(body);
     } catch {
-      data = { response: body.slice(0, 500) };
+      parsed = undefined;
     }
+
     return {
-      endpoint: path,
+      service: service.name,
+      reachable: response.ok,
       httpStatus: response.status,
-      ok: response.ok,
-      data: redact(data),
+      health: selectSafeHealthFields(parsed) ?? null,
     };
-  } catch (error) {
+  } catch {
     return {
-      endpoint: path,
-      ok: false,
-      error: error instanceof Error ? error.message.slice(0, 240) : "Request failed",
+      service: service.name,
+      reachable: false,
+      httpStatus: null,
+      health: null,
+      error: "health_check_unavailable",
     };
   }
 }
 
 export default defineTool({
   description:
-    "Read-only status check for Voom_system. Fetches the fixed Cloudflare Worker health and MT5 status endpoints. Use when the user asks about system health, Worker availability, or MT5 connection. Never sends trade commands or accepts arbitrary URLs.",
+    "Read-only health check for the VOOM_SYSTEM NOVA AI Worker and Remote MCP Worker. It checks only public service health endpoints; it does not verify a personal MT5 account, expose private account data, or place, modify, or close orders.",
   inputSchema: z.object({}),
   async execute() {
-    const results = await Promise.all(PATHS.map(({ path }) => readEndpoint(path)));
+    const results = await Promise.all(SERVICES.map(readHealth));
+
     return {
-      service: "Voom_system",
+      system: "VOOM_SYSTEM",
       mode: "read-only",
+      orderSubmissionEnabled: false,
       checkedAt: new Date().toISOString(),
       results,
+      note:
+        "Worker health is not proof of an authenticated MT5 connection. Account-specific status requires the user's authenticated, tenant-isolated MCP path.",
     };
   },
 });
