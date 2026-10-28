@@ -1,144 +1,74 @@
-# eve Chat Template
+# VOOM AI Chat — NOVA
 
-A persisted Next.js chat template for [eve](https://beta.eve.dev), built with shadcn/ui, Tailwind CSS, Streamdown, Better Auth, Drizzle, Neon, and Upstash Redis.
+แอปแชท AI แยกสำหรับ VOOM_SYSTEM ใช้เป็นพื้นที่ทำงานสำหรับการสนทนา วิเคราะห์ และเชื่อมต่อบริการผ่าน API ที่ผ่านการยืนยันสิทธิ์ โดยแยกวงจรพัฒนาออกจากโปรเจกต์หลัก NOVA
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?project-name=eve-chat-template&repository-name=eve-chat-template&repository-url=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Feve-chat-template%2Ftree%2Fmain&env=BETTER_AUTH_SECRET%2CNEXT_PUBLIC_VERCEL_APP_CLIENT_ID%2CVERCEL_APP_CLIENT_SECRET&envDescription=Neon+provisions+DATABASE_URL.+Upstash+Redis+provisions+rate-limit+storage.+Add+Better+Auth+secret+and+Sign+in+with+Vercel+credentials.+After+deploy%2C+run+production+migrations+from+the+setup+guide.&envLink=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Feve-chat-template%2Fblob%2Fmain%2Fdocs%2Fsetup-and-deploy.md&products=%5B%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22storage%22%2C%22productSlug%22%3A%22neon%22%2C%22integrationSlug%22%3A%22neon%22%7D%2C%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22storage%22%2C%22productSlug%22%3A%22upstash-kv%22%2C%22integrationSlug%22%3A%22upstash%22%7D%5D)
+> **สถานะความปลอดภัย:** Read-only by default. โปรเจกต์นี้ไม่ได้รับอนุญาตให้ส่ง แก้ไข หรือปิดคำสั่งซื้อขาย และห้ามเปิด Live Trading ผ่านแชท การเพิ่มการเชื่อมต่อ MT5 หรือ API ใหม่ต้องผ่านการออกแบบสิทธิ์และตรวจสอบความปลอดภัยแยกต่างหาก
 
-## Quick Start
+## ขอบเขตของโปรเจกต์
 
-Two ways to get going:
+- แอปแชท Next.js ที่แยกจากเว็บแดชบอร์ดหลัก
+- Agent instructions สำหรับผู้ช่วยภาษาไทย และชุดเครื่องมือ/การเชื่อมต่อที่กำหนดไว้
+- ประวัติการสนทนาและสถานะ session ตามสถาปัตยกรรมปัจจุบัน
+- UI สำหรับข้อความ การแสดงผล Markdown, tools, sidebar และการเข้าสู่ระบบ
+- เอกสารสำหรับติดตั้ง ดูแลรักษา และทำความเข้าใจโครงสร้าง
 
-- **One-click:** use the **Deploy with Vercel** button above to clone and provision storage, then run migrations (see [Setup and Deployment](docs/setup-and-deploy.md#one-click-deploy)).
-- **Local script:** clone the repo and run the setup script. It links the project, provisions Neon, registers the Sign in with Vercel OAuth app (email scope + callbacks), sets the environment variables through the Vercel API, pulls them locally, runs migrations, and can optionally set up the Notion connector. If OAuth app registration isn't available it falls back to a guided manual flow.
+โปรเจกต์นี้ยังไม่ถือว่าเชื่อม MT5 หรือส่งคำสั่งซื้อขายได้ เพียงเพราะมีหน้าจอแชทหรือแสดงสถานะการเชื่อมต่อ
 
-```bash
-# Uses the linked project's team by default
-./scripts/setup.sh
+## เทคโนโลยี
 
-# Or target a specific team (also accepts a bare team slug)
-./scripts/setup.sh --scope <team-slug>
-```
+- Next.js App Router, React และ TypeScript
+- eve สำหรับ agent runtime และ stream handling
+- Better Auth สำหรับการยืนยันตัวตน
+- Drizzle ORM และ Neon Postgres สำหรับ persistence
+- Upstash Redis สำหรับ rate limiting
+- Tailwind CSS และ shadcn/ui สำหรับ UI
+- Vercel สำหรับการ Deploy; Vercel Connect integrations เป็นตัวเลือกตามการตั้งค่า
 
-The `--scope` is optional; omit it to use the linked project's team. The script needs the `vercel` CLI, `node`, `pnpm`, and `openssl`. Prefer to do it by hand? Follow the sequential steps below, or the full [Setup and Deployment](docs/setup-and-deploy.md) guide.
+## แผนผังไฟล์
 
-## Getting Started
+ดูรายละเอียดและกติกาการวางไฟล์ที่ [docs/project-structure.md](docs/project-structure.md)
 
-For the full local setup, storage provisioning, Sign in with Vercel credentials, and production deploy flow, see [Setup and Deployment](docs/setup-and-deploy.md). For the runtime architecture, streaming model, persistence flow, and extension points, see [How the Chatbot Works](docs/how-the-chatbot-works.md).
+| ตำแหน่ง | หน้าที่ |
+| --- | --- |
+| `app/` | Routes, pages, server actions, API handlers และส่วนประกอบเฉพาะแอป |
+| `agent/` | Agent definition, instructions, channels, connections และ tools |
+| `components/` | UI components ที่ใช้ร่วมกัน โดยเฉพาะ chat, auth และ UI primitives |
+| `lib/` | Logic ร่วมของ authentication, database, chat และ utilities |
+| `lib/db/` | Drizzle schema และ migrations |
+| `docs/` | คู่มือติดตั้ง สถาปัตยกรรม และแนวทางดูแลรักษา |
+| `scripts/` | สคริปต์ setup/maintenance ที่ใช้โดยโปรเจกต์ |
+| `evals/` | ไฟล์สำหรับประเมินพฤติกรรม agent ตามที่ตั้งค่าไว้ |
 
-Install dependencies with pnpm:
+## เริ่มต้นพัฒนา
+
+ต้องมี Node.js 24+ และ pnpm
 
 ```bash
 pnpm install
-```
-
-Link the Vercel project and pull environment variables:
-
-```bash
-vercel link
-```
-
-Provision storage with the [Vercel CLI integration commands](https://vercel.com/docs/cli/integration):
-
-```bash
-# Required: persisted chat, auth, eve session state, and message snapshots
-vercel integration add neon
-
-# Required: Redis-backed rate limiting
-vercel integration add upstash
-```
-
-Follow the prompts to connect each resource to the linked project. Then pull the generated environment variables locally:
-
-```bash
-vercel env pull .env.local --yes
-```
-
-Required environment variables:
-
-```bash
-DATABASE_URL=
-BETTER_AUTH_SECRET=
-NEXT_PUBLIC_VERCEL_APP_CLIENT_ID=
-VERCEL_APP_CLIENT_SECRET=
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
-KV_REST_API_URL=
-KV_REST_API_TOKEN=
-```
-
-Optional environment variables:
-
-```bash
-# Override the app origin for custom production domains.
-BETTER_AUTH_URL=
-
-# Enable hosted Vercel Connect integrations.
-SLACK_CONNECTOR=
-LINEAR_CONNECTOR=
-NOTION_CONNECTOR=
-SENTRY_CONNECTOR=
-```
-
-Create optional Vercel Connect integrations:
-
-```bash
-# Slack channel
-vercel connect create slack --name eve-chat-template --triggers
-vercel connect attach <slack-connector-uid> --triggers --trigger-path /eve/v1/slack --yes
-
-# MCP connections
-vercel connect create mcp.notion.com --name notion
-vercel connect create https://mcp.linear.app/mcp --name linear
-vercel connect create https://mcp.sentry.dev/mcp --name sentry
-```
-
-The deploy button does not require these integrations. For manual setup, put the returned connector UIDs in `SLACK_CONNECTOR`, `NOTION_CONNECTOR`, `LINEAR_CONNECTOR`, and `SENTRY_CONNECTOR`. Local development falls back to `slack/eve-chat-template`, `notion`, `linear`, and `sentry`, so connectors created with the names above work without editing `agent/`.
-
-If the connector is not attached to the linked project, run:
-
-```bash
-vercel connect attach <connector-uid> --yes
-vercel env pull .env.local
-```
-
-Create the database tables:
-
-```bash
-pnpm db:migrate
-```
-
-For production, run migrations with Vercel production env vars:
-
-```bash
-vercel env run -e production -- pnpm db:migrate
-```
-
-Start the development server:
-
-```bash
 pnpm dev
 ```
 
-## What Is Included
+สำหรับระบบที่ต้องใช้ฐานข้อมูลและ authentication ให้ทำตาม [คู่มือติดตั้งและ Deploy](docs/setup-and-deploy.md) ก่อน อย่านำค่า secret หรือไฟล์ `.env.local` ขึ้น GitHub
 
-- Text chat with an eve agent through same-origin `/eve/v1/*` routes
-- Better Auth sign-in with Vercel
-- Mandatory Neon-backed chat history
-- Mandatory Upstash Redis rate limiting for authenticated chat sends
-- Drizzle schema and migrations under `lib/db`
-- Saved eve session cursors and event snapshots
-- Sidebar history with delete and new-chat actions
-- Vercel Connect-backed Notion, Linear, and Sentry MCP connections
-- Vercel Connect-backed Slack channel route at `/eve/v1/slack`
-- Composer-level connections menu
-- First-message chat titles derived locally from the user's prompt
-- Streamdown markdown rendering for assistant text and reasoning
-- shadcn/Tailwind components for messages, tools, HITL prompts, and composer
+คำสั่งตรวจสอบที่กำหนดไว้ใน `package.json`:
 
-This template intentionally does not include file uploads, Vercel Blob, guest mode, NextAuth/Auth.js, or AI Elements.
+```bash
+pnpm typecheck
+pnpm build
+```
 
-## Agent Code
+คำสั่งเหล่านี้ต้องรันใน environment ที่ติดตั้ง dependencies และตั้งค่า environment variables ที่จำเป็นแล้ว ผลลัพธ์จากไฟล์ config เพียงอย่างเดียวไม่ถือเป็นหลักฐานว่า Build ผ่าน
 
-Edit the agent in `agent/agent.ts`. Its behavior is defined in `agent/instructions.md`, and tools live in `agent/tools/`.
+## เอกสารหลัก
 
-The browser talks to eve with `useEveAgent()` from `eve/react`; the app stores eve stream events and session state so `/chat/[id]` can resume the same durable conversation after refresh.
+- [แผนผังและกติกาการจัดไฟล์](docs/project-structure.md)
+- [การทำงานภายในของแชท](docs/how-the-chatbot-works.md)
+- [การติดตั้งและ Deploy](docs/setup-and-deploy.md)
+
+## กติกาการพัฒนาอย่างปลอดภัย
+
+1. พัฒนาและตรวจสอบใน branch แยกก่อนเปิด Pull Request; หลีกเลี่ยงการแก้ `main` โดยตรง
+2. ไม่ย้ายไฟล์หรือเปลี่ยน import paths โดยไม่มีการตรวจ TypeScript และ Build
+3. เก็บ secrets ใน Vercel Environment Variables หรือ secret store ที่อนุมัติ ห้ามใส่ค่าจริงใน source, logs หรือ chat
+4. ใช้ข้อมูลทดสอบ/โหมด paper และ read-only ระหว่างพัฒนา ห้ามเพิ่มความสามารถส่งคำสั่งซื้อขายโดยอาศัยเพียง agent prompt
+5. ระบุให้ชัดว่าอะไรตรวจแล้ว อะไรเปลี่ยน และอะไรยังไม่ได้ยืนยัน รวมถึง Build/Preview status
