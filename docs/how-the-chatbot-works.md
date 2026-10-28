@@ -1,16 +1,23 @@
-# How the Chatbot Works
+# VOOM AI Chat Architecture
 
-This document explains the eve chat template end to end. It is written for
-future maintainers who need to understand why the app is shaped this way, where
-state lives, how messages stream, and how to safely change the chat experience.
+This document describes how the VOOM AI Chat application is structured, where chat state is stored, how messages stream, and how to change the chat experience without breaking persistence or navigation.
 
-The short version: this is not a generic stateless chat UI. The browser talks to
-an eve agent through same-origin `/eve/v1/*` routes, persists eve stream events
-to Postgres as they arrive, keeps an eve session cursor so interrupted streams
-can resume, and uses a static Next.js shell so the sidebar and composer do not
-thrash during route navigation.
+This is a standalone chat project. Keep its source, environment variables, preview deployments, and release process separate from the main NOVA repository. Integrations with the main system should use documented, authenticated server-side APIs rather than importing NOVA source files into this repository.
+
+The short version: the browser talks to an eve agent through same-origin `/eve/v1/*` routes, persists eve stream events to Postgres as they arrive, keeps an eve session cursor so interrupted streams can resume, and uses a static Next.js shell so the sidebar and composer do not thrash during route navigation.
 
 ## Main Pieces
+
+The application has four major layers:
+
+1. The eve agent layer in `agent/`
+2. The Next.js shell and page layer in `app/`
+3. The chat UI components in `components/chat/`
+4. The persistence, auth, setup, and rate-limit layer in `lib/`
+
+For the current directory map and file-placement conventions, see [Project Structure](project-structure.md). The remaining sections below document implementation details of the current codebase; check the source before assuming a runtime behavior is unchanged.
+
+
 
 The template has four major layers:
 
