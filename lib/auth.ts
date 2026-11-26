@@ -36,7 +36,7 @@ export const auth = betterAuth({
     accountLinking: {
       enabled: true,
       trustedProviders: ["vercel"],
-      allowDifferentEmails: true,
+      allowDifferentEmails: false,
     },
   },
   secret: betterAuthSecret ?? "eve-chat-template-unconfigured-secret",
