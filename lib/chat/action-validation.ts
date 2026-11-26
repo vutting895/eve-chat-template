@@ -1,9 +1,9 @@
 import type { HandleMessageStreamEvent, SessionState } from "eve/client";
 
-const MAX_CHAT_EVENTS_PER_BATCH = 200;
+const MAX_CHAT_EVENTS_PER_BATCH = 1000;
 const MAX_CHAT_EVENT_BYTES = 64 * 1024;
-const MAX_CHAT_EVENTS_BYTES = 1024 * 1024;
-const MAX_SESSION_STATE_BYTES = 256 * 1024;
+const MAX_CHAT_EVENTS_BYTES = 700 * 1024;
+const MAX_SESSION_STATE_BYTES = 128 * 1024;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
