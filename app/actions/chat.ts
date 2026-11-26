@@ -27,10 +27,14 @@ const SEND_WINDOW_SECONDS = 60 * 60;
 const MUTATION_LIMIT = 300;
 const MUTATION_WINDOW_SECONDS = 60;
 
-async function enforceChatMutationLimit(userId: string, operation: string) {
+async function enforceChatMutationLimit(
+  userId: string,
+  operation: string,
+  limit = MUTATION_LIMIT,
+) {
   await enforceRateLimit({
     key: userId,
-    limit: MUTATION_LIMIT,
+    limit,
     prefix: `chat:mutation:${operation}`,
     windowSeconds: MUTATION_WINDOW_SECONDS,
   });
@@ -155,7 +159,7 @@ export async function appendChatEventAction(input: {
   readonly eventIndex: number;
 }) {
   const viewer = await requireViewer();
-  await enforceChatMutationLimit(viewer.id, "append-event");
+  await enforceChatMutationLimit(viewer.id, "append-event", 1200);
   assertChatEvent(input.event);
   assertChatEventIndex(input.eventIndex);
 
