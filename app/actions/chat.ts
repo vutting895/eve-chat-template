@@ -12,12 +12,29 @@ import {
   saveChatSessionState,
   skipChatAuthorization,
 } from "@/lib/db/queries";
+import {
+  assertChatEvent,
+  assertChatEventIndex,
+  assertChatEvents,
+  assertChatSessionState,
+} from "@/lib/chat/action-validation";
 import { assertChatMessageLength } from "@/lib/chat/limits";
 import { RateLimitError, enforceRateLimit } from "@/lib/rate-limit";
 import { getServerViewer } from "@/lib/session";
 
 const SEND_LIMIT = 25;
 const SEND_WINDOW_SECONDS = 60 * 60;
+const MUTATION_LIMIT = 300;
+const MUTATION_WINDOW_SECONDS = 60;
+
+async function enforceChatMutationLimit(userId: string, operation: string) {
+  await enforceRateLimit({
+    key: userId,
+    limit: MUTATION_LIMIT,
+    prefix: `chat:mutation:${operation}`,
+    windowSeconds: MUTATION_WINDOW_SECONDS,
+  });
+}
 
 export async function createChatAction(input?: { readonly pendingUserMessage?: string }) {
   const viewer = await requireViewer();
@@ -73,6 +90,9 @@ export async function saveChatSnapshotAction(input: {
   readonly session: SessionState;
 }) {
   const viewer = await requireViewer();
+  await enforceChatMutationLimit(viewer.id, "snapshot");
+  assertChatEvents(input.events);
+  assertChatSessionState(input.session);
 
   await saveChatSnapshot({
     chatId: input.chatId,
@@ -89,7 +109,7 @@ export async function markChatPendingMessageAction(input: {
   readonly message: string;
 }) {
   const viewer = await requireViewer();
-
+  await enforceChatMutationLimit(viewer.id, "pending-message");
   assertChatMessageLength(input.message);
 
   return markChatPendingMessage({
@@ -101,6 +121,7 @@ export async function markChatPendingMessageAction(input: {
 
 export async function clearChatPendingMessageAction(chatId: string) {
   const viewer = await requireViewer();
+  await enforceChatMutationLimit(viewer.id, "clear-pending-message");
 
   await clearChatPendingMessage({
     chatId,
@@ -116,6 +137,9 @@ export async function skipChatAuthorizationAction(input: {
   readonly session: SessionState;
 }) {
   const viewer = await requireViewer();
+  await enforceChatMutationLimit(viewer.id, "authorization-skip");
+  assertChatEvents(input.events);
+  assertChatSessionState(input.session);
 
   return skipChatAuthorization({
     chatId: input.chatId,
@@ -131,6 +155,9 @@ export async function appendChatEventAction(input: {
   readonly eventIndex: number;
 }) {
   const viewer = await requireViewer();
+  await enforceChatMutationLimit(viewer.id, "append-event");
+  assertChatEvent(input.event);
+  assertChatEventIndex(input.eventIndex);
 
   await appendChatEvent({
     chatId: input.chatId,
@@ -147,6 +174,8 @@ export async function saveChatSessionStateAction(input: {
   readonly session: SessionState;
 }) {
   const viewer = await requireViewer();
+  await enforceChatMutationLimit(viewer.id, "session-state");
+  assertChatSessionState(input.session);
 
   await saveChatSessionState({
     chatId: input.chatId,
@@ -159,6 +188,7 @@ export async function saveChatSessionStateAction(input: {
 
 export async function deleteChatAction(chatId: string) {
   const viewer = await requireViewer();
+  await enforceChatMutationLimit(viewer.id, "delete-chat");
 
   await deleteChatForUser(chatId, viewer.id);
 
